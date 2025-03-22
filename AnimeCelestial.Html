@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-32">
+  <meta name="viewport" content="width=device-width, initial-scale=5">
+  <title>Echelons Dev Team</title>
+  <!-- Futuristic font from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Orbitron:400,700&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- Intro Cutscene Overlay (Smoother) ---------- */
+    #intro-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, #141414, #000);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      animation: introFadeOut 1.5s forwards 2.5s;
+    }
+    #intro-screen h1 {
+      font-size: 4rem;
+      font-family: 'Orbitron', sans-serif;
+      color: rgba(0, 209, 255, 0.9);
+      text-shadow: 0 0 20px rgba(0, 209, 255, 0.6);
+      opacity: 0;
+      animation: introTextIn 1.5s forwards, introTextOut 1.5s forwards 2s;
+    }
+    @keyframes introTextIn {
+      0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes introTextOut {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.05); }
+    }
+    @keyframes introFadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+
+    /* ---------- Static, Detailed Background & Custom Cursor ---------- */
+    /* Updated Background: Black and Sunset Orange Gradient */
+    #animated-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -10; /* behind all design elements */
+      background: linear-gradient(to top, #000, #ff4500);
+    }
+    /* Custom Cursor Element */
+    .custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      background-color: transparent;
+      transform: translate(-50%, -50%);
+      transition: background-color 0.1s linear;
+    }
+
+    /* ---------- Custom Scrollbar Styling ---------- */
+    /* For Webkit browsers */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ff4500;
+      border-radius: 4px;
+    }
+    /* Firefox scrollbar styling (limited support) */
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: #ff4500 rgba(0,0,0,0.5);
+    }
+
+    /* ---------- Original Global Styles (Refined for Smoothness) ---------- */
+    body {
+      margin: 0;
+      padding: 0;
+      background: none;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+    /* Primary Rotating Border */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      box-sizing: border-box;
+      border: 4px solid;
+      border-image: linear-gradient(45deg, rgba(0,209,255,0.5), rgba(255,0,128,0.5), rgba(0,209,255,0.5)) 1;
+      animation: rotateBorder 20s linear infinite;
+      pointer-events: none;
+      z-index: 100;
+    }
+    @keyframes rotateBorder {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    /* Secondary Pulsing Border */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      box-sizing: border-box;
+      border: 3px dashed;
+      border-image: linear-gradient(135deg, rgba(255,0,128,0.5), rgba(0,209,255,0.5), rgba(255,0,128,0.5)) 1;
+      animation: pulseBorder 3s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 101;
+    }
+    @keyframes pulseBorder {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    /* Holographic Grid Background */
+    .grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background: 
+        linear-gradient(0deg, transparent 24%, rgba(0, 209, 255, 0.15) 25%, rgba(0, 209, 255, 0.15) 26%, transparent 27%, transparent 74%, rgba(255, 0, 128, 0.15) 75%, rgba(255, 0, 128, 0.15) 76%, transparent 77%, transparent),
+        linear-gradient(90deg, transparent 24%, rgba(255, 0, 128, 0.15) 25%, rgba(255, 0, 128, 0.15) 26%, transparent 27%, transparent 74%, rgba(0, 209, 255, 0.15) 75%, rgba(0, 209, 255, 0.15) 76%, transparent 77%, transparent);
+      background-size: 50px 50px;
+      animation: moveGrid 30s linear infinite;
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 50;
+    }
+    @keyframes moveGrid {
+      from { transform: translate(0, 0); }
+      to { transform: translate(-50px, -50px); }
+    }
+    /* Floating Neon Shapes */
+    .neon-shape {
+      position: absolute;
+      border: 2px solid rgba(0, 209, 255, 0.7);
+      width: 100px;
+      height: 100px;
+      opacity: 0.3;
+      animation: float 10s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 80;
+    }
+    .neon-shape:nth-child(1) { top: 10%; left: 20%; animation-duration: 12s; }
+    .neon-shape:nth-child(2) { top: 70%; left: 10%; animation-duration: 15s; }
+    .neon-shape:nth-child(3) { top: 40%; left: 80%; animation-duration: 18s; }
+    .neon-shape:nth-child(4) { top: 85%; left: 75%; animation-duration: 14s; }
+    @keyframes float {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(10px, -10px) rotate(15deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+    /* Glitch Animation for Text */
+    .glitch {
+      position: relative;
+      display: inline-block;
+    }
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: #00d1ff;
+      clip: rect(0, 900px, 0, 0);
+    }
+    .glitch::after {
+      color: #ff0080;
+      z-index: -1;
+    }
+    .glitch:hover {
+      animation: glitchEffect 1s infinite;
+    }
+    @keyframes glitchEffect {
+      0% { clip: rect(10px, 9999px, 15px, 0); transform: translate(2px, -2px); }
+      20% { clip: rect(5px, 9999px, 10px, 0); transform: translate(-2px, 2px); }
+      40% { clip: rect(20px, 9999px, 25px, 0); transform: translate(2px, 2px); }
+      60% { clip: rect(15px, 9999px, 20px, 0); transform: translate(-2px, -2px); }
+      80% { clip: rect(10px, 9999px, 15px, 0); transform: translate(2px, -2px); }
+      100% { clip: rect(5px, 9999px, 10px, 0); transform: translate(0, 0); }
+    }
+    /* Navigation Bar */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 10px 0;
+      display: flex;
+      justify-content: center;
+      z-index: 120;
+      border-bottom: 1px solid rgba(0, 209, 255, 0.5);
+    }
+    nav a {
+      margin: 0 20px;
+      text-decoration: none;
+      color: #fff;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+    nav a:hover,
+    nav a.active {
+      color: #00d1ff;
+    }
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -5px;
+      width: 0;
+      height: 2px;
+      background: #00d1ff;
+      transition: width 0.3s ease;
+    }
+    nav a:hover::after,
+    nav a.active::after {
+      width: 100%;
+    }
+    /* Sections with Transition Effect */
+    .section {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.2s ease;
+      display: none;
+      padding-top: 70px;
+      height: calc(100vh - 70px);
+      text-align: center;
+      position: relative;
+      z-index: 110;
+      overflow-y: auto;
+    }
+    .section.active {
+      display: block;
+      animation: floatIn 0.2s ease-out forwards;
+    }
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(50px) scale(0.8) rotateX(20deg); }
+      to { opacity: 1; transform: translateY(0) scale(1) rotateX(0deg); }
+    }
+    /* Frame for Text Content */
+    .frame {
+      border: 2px solid rgba(0, 209, 255, 0.8);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 80%;
+      box-shadow: 0 0 15px rgba(0, 209, 255, 0.7);
+      background: rgba(0, 0, 0, 0.6);
+    }
+    /* Home Section */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 20px;
+    }
+    .title {
+      font-size: 8rem;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+      margin-bottom: 20px;
+    }
+    .subtitle {
+      font-size: 1.5rem;
+      margin-bottom: 40px;
+      letter-spacing: 2px;
+    }
+    .button {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      color: #fff;
+      background: linear-gradient(45deg, #00d1ff, #ff0080);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-decoration: none;
+      margin-top: 20px;
+    }
+    .button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(255, 0, 128, 0.7);
+    }
+    /* Discord Section */
+    .discord-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 20px;
+      text-align: center;
+    }
+    .discord-content h2 {
+      font-size: 2rem;
+      text-shadow: 0 0 8px rgba(0, 255, 255, 0.7);
+      margin-bottom: 20px;
+    }
+    .discord-content p {
+      font-size: 1rem;
+      margin: 10px 0 20px;
+      line-height: 1.5;
+      max-width: 600px;
+    }
+    /* Game Progress Section */
+    .game-progress {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 50%;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      line-height: 1.5;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: calc(0.9rem + 0.2vw);
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      z-index: 120;
+      background: rgba(0,0,0,0.85);
+      border-top: 1px solid rgba(0,209,255,0.5);
+    }
+    /* Team Section Styles */
+    .team-list {
+      text-align: left;
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: calc(0.6rem + 0.3vw);
+      line-height: 1.6;
+    }
+    .team-list h3 {
+      font-size: calc(1.2rem + 0.3vw);
+      margin: 20px 0 10px;
+      color: #00d1ff;
+      text-transform: uppercase;
+    }
+    .team-list p {
+      margin: 0 0 10px;
+      font-size: calc(0.8rem + 0.3vw);
+      -webkit-text-stroke: 0.5px #00d1ff;
+      text-shadow: -0.5px -0.5px 0 #00d1ff, 0.5px -0.5px 0 #00d1ff, -0.5px 0.5px 0 #00d1ff, 0.5px 0.5px 0 #00d1ff;
+    }
+    /* Starfield Background */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 30;
+      pointer-events: none;
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: moveStar linear infinite;
+    }
+    @keyframes moveStar {
+      from { transform: translateY(0); }
+      to { transform: translateY(100vh); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Intro Cutscene Overlay -->
+  <div id="intro-screen">
+    <h1>Echelons Dev Team</h1>
+  </div>
+
+  <!-- Static, Detailed Background (Black to Sunset Orange) -->
+  <div id="animated-bg"></div>
+  
+  <!-- Holographic Grid Background -->
+  <div class="grid"></div>
+  <!-- Floating Neon Shapes -->
+  <div class="neon-shape"></div>
+  <div class="neon-shape"></div>
+  <div class="neon-shape"></div>
+  <div class="neon-shape"></div>
+  
+  <!-- Navigation Bar -->
+  <nav>
+    <a href="#" id="homeTab" class="active">Home</a>
+    <a href="#" id="discordTab">Discord</a>
+    <a href="#" id="gameProgressTab">Game Progress</a>
+    <a href="#" id="teamTab">The Team</a>
+  </nav>
+
+  <!-- Home Section -->
+  <div id="homeSection" class="section active">
+    <div class="container">
+      <h1 class="title glitch" data-text="Anime Celestial">Echelons Dev Team</h1>
+      <p class="subtitle">Ready to Join Us? Click Discord above! We are an AMAZING community!</p>
+      <a href="https://discord.gg/FAp9GfqG" target="_blank" class="button">Enter the Realm</a>
+    </div>
+  </div>
+
+  <!-- Discord Section -->
+  <div id="discordSection" class="section">
+    <div class="discord-content">
+      <h1 class="title glitch" data-text="Anime Celestial">Echelons Dev Team</h1>
+      <p>
+        Connect with fellow enthusiasts, get exclusive updates, and participate in vibrant discussions.
+        Become part of our growing Anime Celestial community—discover insider tips, event news, and collaborate with others who share your passion for cutting‑edge, sci‑fi inspired gaming.
+      </p>
+      <a href="https://discord.gg/FAp9GfqG" target="_blank" class="button">Join Anime Celestial</a>
+    </div>
+  </div>
+  
+  <!-- Game Progress Section -->
+  <div id="gameProgressSection" class="section">
+    <h1 class="title glitch" data-text="Anime Celestial">Echelons Dev Team</h1>
+    <div class="game-progress">
+      <p>We are under development at the moment. Soon we will launch the game for testing and then release it! If you have any questions about the game’s status, join Discord and ask a member of staff!</p>
+      <a href="https://discord.gg/FAp9GfqG" target="_blank" class="button">Join Anime Celestial</a>
+    </div>
+  </div>
+  
+  <!-- The Team Section -->
+  <div id="teamSection" class="section">
+    <div class="container">
+      <div class="frame">
+        <h2>The Team</h2>
+        <div class="team-list">
+          <h3>Lead Developers</h3>
+          <p>Ax, Konami</p>
+          <h3>Developers</h3>
+          <p>7_rack, XenCent, Ancient, Emerald, Lucci, Pandaozz, timeless, CONQUEST, Acrenith, Saint, Unknown</p>
+          <h3>Engineer</h3>
+          <p>SergeantVrym</p>
+          <h3>Owner</h3>
+          <p>Mushy</p>
+          <h3>Community Manager</h3>
+          <p>cia</p>
+          <h3>Head Admin</h3>
+          <p>Kumagawa</p>
+          <h3>Investor</h3>
+          <p>Junsui</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Starfield Background -->
+  <div class="stars"></div>
+
+  <!-- Custom Cursor Element -->
+  <div class="custom-cursor"></div>
+
+  <!-- ---------- Navigation & Starfield Script ---------- -->
+  <script>
+    // Navigation Tab Switching with "Float In" Transition
+    const homeTab = document.getElementById("homeTab");
+    const discordTab = document.getElementById("discordTab");
+    const gameProgressTab = document.getElementById("gameProgressTab");
+    const teamTab = document.getElementById("teamTab");
+    const homeSection = document.getElementById("homeSection");
+    const discordSection = document.getElementById("discordSection");
+    const gameProgressSection = document.getElementById("gameProgressSection");
+    const teamSection = document.getElementById("teamSection");
+
+    function switchTab(activeTab, activeSection) {
+      document.querySelectorAll("nav a").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".section").forEach(section => section.classList.remove("active"));
+      activeTab.classList.add("active");
+      activeSection.classList.add("active");
+    }
+
+    homeTab.addEventListener("click", function(e) {
+      e.preventDefault();
+      switchTab(homeTab, homeSection);
+    });
+
+    discordTab.addEventListener("click", function(e) {
+      e.preventDefault();
+      switchTab(discordTab, discordSection);
+    });
+
+    gameProgressTab.addEventListener("click", function(e) {
+      e.preventDefault();
+      switchTab(gameProgressTab, gameProgressSection);
+    });
+    
+    teamTab.addEventListener("click", function(e) {
+      e.preventDefault();
+      switchTab(teamTab, teamSection);
+    });
+
+    // Create animated stars for a dynamic background
+    const starContainer = document.querySelector('.stars');
+    const numStars = 600;
+    for (let i = 0; i < numStars; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      star.style.top = "0vh";
+      star.style.left = Math.random() * 100 + 'vw';
+      star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      star.style.animationDelay = Math.random() * 2 + 's';
+      star.style.opacity = Math.random();
+      starContainer.appendChild(star);
+    }
+  </script>
+
+  <!-- ---------- Custom Cursor Script (Static Background) ---------- -->
+  <script>
+    (function() {
+      const customCursor = document.querySelector('.custom-cursor');
+      const animatedBg = document.getElementById('animated-bg');
+
+      document.addEventListener('mousemove', (e) => {
+        customCursor.style.top = e.clientY + 'px';
+        customCursor.style.left = e.clientX + 'px';
+      });
+
+      // With a static background, update the cursor color just once
+      function updateCursorColor() {
+        const bgStyle = window.getComputedStyle(animatedBg);
+        const bgColor = bgStyle.backgroundImage ? '' : bgStyle.backgroundColor;
+        customCursor.style.backgroundColor = bgColor;
+      }
+      updateCursorColor();
+    })();
+  </script>
+</body>
+</html>
